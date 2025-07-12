@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Forum | Community Knowledge Sharing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e0e7ff;
+            --secondary: #3f37c9;
+            --dark: #1e1e24;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: white;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 i {
+            color: var(--secondary);
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        nav a:hover::after {
+            width: 70%;
+        }
+
+        .main-container {
+            padding: 40px 0;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-bar {
+            display: flex;
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .search-bar:focus-within {
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.2);
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .search-bar button:hover {
+            background: var(--secondary);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .suggestion-item:hover {
+            background: var(--primary-light);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            background: white;
+            color: var(--gray);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: var(--gray-light);
+        }
+
+        /* Questions */
+        .questions {
+            display: grid;
+            gap: 20px;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .question-card:hover::before {
+            background: var(--primary);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            align-items: flex-start;
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .question-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--primary);
+        }
+
+        .question-date {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        .question-content {
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .question-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .question-stats {
+            display: flex;
+            gap: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat i {
+            font-size: 0.9rem;
+        }
+
+        .upvoted {
+            color: var(--primary);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 50;
+            border: none;
+        }
+
+        .fab:hover {
+            background: var(--secondary);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-light);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .question-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .question-stats {
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container container">
+            <h1><i class="fas fa-question-circle"></i> Question Forum</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/ask">Ask Question</a>
+                <a href="#">Categories</a>
+                <a href="#">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container container">
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Search questions, topics, or users..." id="searchInput">
+                <button id="searchButton"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="search-suggestions" id="searchSuggestions">
+                <!-- Suggestions will appear here -->
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active"><i class="fas fa-fire"></i> Trending</button>
+            <button class="filter-btn"><i class="fas fa-clock"></i> Newest</button>
+            <button class="filter-btn"><i class="fas fa-comment-dots"></i> Unanswered</button>
+            <button class="filter-btn"><i class="fas fa-star"></i> Top Rated</button>
+            <button class="filter-btn"><i class="fas fa-ellipsis-h"></i> More</button>
+        </div>
+
+        <div class="questions" id="questionsContainer">
+            <!-- Questions will be loaded here by JavaScript -->
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab" id="askQuestionFab" title="Ask a question">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script>
+        // Sample data - in a real app, this would come from an API
+       
+
+        // DOM Elements
+        const questionsContainer = document.getElementById('questionsContainer');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const searchSuggestions = document.getElementById('searchSuggestions');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const askQuestionFab = document.getElementById('askQuestionFab');
+
+        // Display questions
+        function displayQuestions(questionsToDisplay) {
+            if (questionsToDisplay.length === 0) {
+                questionsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-question"></i>
+                        <h3>No questions found</h3>
+                        <p>Try adjusting your search or filters, or be the first to ask a question!</p>
+                        <button class="filter-btn active" onclick="window.location.href='form.html'">
+                            <i class="fas fa-plus"></i> Ask a Question
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            questionsContainer.innerHTML = questionsToDisplay.map(question => `
+                <div class="question-card" data-id="${question.id}">
+                    <div class="question-header">
+                        <div>
+                            <h3 class="question-title">${question.title}</h3>
+                            <div class="question-author">
+                                <span class="author-avatar">${question.author.charAt(0).toUpperCase()}</span>
+                                ${question.author} • ${question.date}
+                            </div>
+                        </div>
+                        ${question.answered ? '<span class="tag" style="background:#e3fafc;color:#1098ad;"><i class="fas fa-check-circle"></i> Answered</span>' : '<span class="tag" style="background:#fff3bf;color:#e67700;"><i class="fas fa-question-circle"></i> Unanswered</span>'}
+                    </div>
+                    <p class="question-content">${question.content}</p>
+                    <div class="question-tags">
+                        ${question.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="question-stats">
+                        <div class="stat upvote-btn" onclick="event.stopPropagation(); toggleUpvote(this, ${question.id})">
+                            <i class="fas fa-arrow-up"></i> ${question.votes}
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-comment"></i> ${question.answers} answers
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-eye"></i> ${question.views} views
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click event to question cards
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    // In a real app, this would navigate to the question detail page
+                    window.location.href = `/question/${card.dataset.id}`;
+                });
+            });
+        }
+
+        // Toggle upvote
+        function toggleUpvote(element, questionId) {
+            const question = questions.find(q => q.id === questionId);
+            const isUpvoted = element.classList.contains('upvoted');
+            
+            if (isUpvoted) {
+                element.classList.remove('upvoted');
+                question.votes -= 1;
+                element.innerHTML = `<i class="fas fa-arrow-up"></i> ${question.votes}`;
+            } else {
+                element.classList.add('upvoted');
+                question.votes += 1;
+                element.innerHTML = `<i class="fas fa-arrow-up"></i> ${question.votes}`;
+                
+                // Add animation
+                element.style.transform = 'translateY(-3px)';
+                setTimeout(() => {
+                    element.style.transform = '';
+                }, 300);
+            }
+        }
+
+        // Filter questions
+        function filterQuestions(filter) {
+            let filteredQuestions = [...questions];
+            
+            switch(filter) {
+                case 'Trending':
+                    filteredQuestions.sort((a, b) => b.votes - a.votes);
+                    break;
+                case 'Newest':
+                    filteredQuestions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'Unanswered':
+                    filteredQuestions = filteredQuestions.filter(q => !q.answered);
+                    break;
+                case 'Top Rated':
+                    filteredQuestions.sort((a, b) => (b.votes + b.answers * 2) - (a.votes + a.answers * 2));
+                    break;
+                default:
+                    break;
+            }
+            
+            displayQuestions(filteredQuestions);
+        }
+
+        // Search functionality
+        function searchQuestions(query) {
+            if (!query.trim()) {
+                displayQuestions(questions);
+                return;
+            }
+            
+            const lowerQuery = query.toLowerCase();
+            const results = questions.filter(q => 
+                q.title.toLowerCase().includes(lowerQuery) || 
+                q.content.toLowerCase().includes(lowerQuery) ||
+                q.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
+                q.author.toLowerCase().includes(lowerQuery)
+            );
+            
+            displayQuestions(results);
+        }
+
+        // Generate search suggestions
+        function generateSuggestions(query) {
+            if (!query.trim()) {
+                searchSuggestions.classList.remove('show');
+                return;
+            }
+            
+            const lowerQuery = query.toLowerCase();
+            const tags = [...new Set(questions.flatMap(q => q.tags))];
+            const authors = [...new Set(questions.map(q => q.author))];
+            
+            const tagMatches = tags.filter(tag => tag.toLowerCase().includes(lowerQuery));
+            const authorMatches = authors.filter(author => author.toLowerCase().includes(lowerQuery));
+            
+            let suggestionsHTML = '';
+            
+            if (tagMatches.length > 0) {
+                suggestionsHTML += `<div class="suggestion-header">Tags</div>`;
+                suggestionsHTML += tagMatches.map(tag => `
+                    <div class="suggestion-item" onclick="searchQuestions('${tag}'); searchInput.value='${tag}'; searchSuggestions.classList.remove('show')">
+                        <i class="fas fa-tag"></i> ${tag}
+                    </div>
+                `).join('');
+            }
+            
+            if (authorMatches.length > 0) {
+                suggestionsHTML += `<div class="suggestion-header">Authors</div>`;
+                suggestionsHTML += authorMatches.map(author => `
+                    <div class="suggestion-item" onclick="searchQuestions('${author}'); searchInput.value='${author}'; searchSuggestions.classList.remove('show')">
+                        <i class="fas fa-user"></i> ${author}
+                    </div>
+                `).join('');
+            }
+            
+            if (suggestionsHTML) {
+                searchSuggestions.innerHTML = suggestionsHTML;
+                searchSuggestions.classList.add('show');
+            } else {
+                searchSuggestions.classList.remove('show');
+            }
+        }
+            
+        // Event Listeners
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                filterQuestions(button.textContent.trim());
+            });
+        });
+
+        searchInput.addEventListener('input', () => {
+            generateSuggestions(searchInput.value);
+        });
+
+        searchButton.addEventListener('click', () => {
+            searchQuestions(searchInput.value);
+            searchSuggestions.classList.remove('show');
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchQuestions(searchInput.value);
+                searchSuggestions.classList.remove('show');
+            }
+        });
+
+        askQuestionFab.addEventListener('click', () => {
+            window.location.href = 'form.html';
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                searchSuggestions.classList.remove('show');
+            }
+        });
+        let questions = [];
+
+async function loadQuestions() {
+    try {
+        const res = await fetch("/api/questions");
+        questions = await res.json();
+        displayQuestions(questions);
+    } catch (error) {
+        questionsContainer.innerHTML = `<p>Failed to load questions.</p>`;
+        console.error("Error loading questions:", error);
+    }
+}
+loadQuestions();
+
+
+        // Initialize
+        displayQuestions(questions);
+    </script>
+</body>
+</html>
