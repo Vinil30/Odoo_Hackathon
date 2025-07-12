@@ -433,7 +433,7 @@
         <div class="header-container container">
             <h1><i class="fas fa-question-circle"></i> Question Forum</h1>
             <nav>
-                <a href="/">Home</a>
+                <a href="/" class="active">Home</a>
                 <a href="/ask">Ask Question</a>
                 <a href="#">Categories</a>
                 <a href="#">About</a>
@@ -474,7 +474,68 @@
 
     <script>
         // Sample data - in a real app, this would come from an API
-       
+       const questions = [
+            {
+                id: 1,
+                title: "How to implement authentication in a React application?",
+                content: "I'm building a React app and need to add user authentication. What are the best practices for implementing secure authentication in a React frontend with a Node.js backend? Should I use JWT, sessions, or something else?",
+                author: "dev_user123",
+                date: "2 hours ago",
+                tags: ["react", "authentication", "jwt", "nodejs"],
+                votes: 24,
+                answers: 5,
+                views: 143,
+                answered: true
+            },
+            {
+                id: 2,
+                title: "What's the difference between CSS Grid and Flexbox?",
+                content: "I'm trying to understand when to use CSS Grid versus Flexbox. They seem similar but I know they have different use cases. Can someone explain the key differences and when you would choose one over the other?",
+                author: "frontend_newbie",
+                date: "5 hours ago",
+                tags: ["css", "flexbox", "grid", "web-design"],
+                votes: 18,
+                answers: 7,
+                views: 210,
+                answered: true
+            },
+            {
+                id: 3,
+                title: "Best way to optimize images for a website?",
+                content: "My website is loading slowly because of large images. What are the best tools and techniques for optimizing images for web performance without sacrificing too much quality?",
+                author: "web_optimizer",
+                date: "1 day ago",
+                tags: ["performance", "images", "optimization", "webdev"],
+                votes: 12,
+                answers: 4,
+                views: 98,
+                answered: true
+            },
+            {
+                id: 4,
+                title: "How to properly handle errors in async/await JavaScript?",
+                content: "I'm struggling with error handling in my async functions. Sometimes errors slip through and crash my app. What's the best pattern for comprehensive error handling with async/await?",
+                author: "js_developer",
+                date: "1 day ago",
+                tags: ["javascript", "async", "error-handling"],
+                votes: 15,
+                answers: 0,
+                views: 76,
+                answered: false
+            },
+            {
+                id: 5,
+                title: "Is TypeScript worth learning for a JavaScript developer?",
+                content: "I've been using JavaScript for years but keep hearing about TypeScript. Is it worth the time investment to learn? What are the main benefits for an experienced JS developer?",
+                author: "curious_coder",
+                date: "2 days ago",
+                tags: ["typescript", "javascript", "webdev"],
+                votes: 32,
+                answers: 9,
+                views: 287,
+                answered: true
+            }
+        ];
 
         // DOM Elements
         const questionsContainer = document.getElementById('questionsContainer');
@@ -534,7 +595,7 @@
             document.querySelectorAll('.question-card').forEach(card => {
                 card.addEventListener('click', () => {
                     // In a real app, this would navigate to the question detail page
-                    window.location.href = `/question/${card.dataset.id}`;
+                    alert("data is loading")
                 });
             });
         }
@@ -680,16 +741,16 @@
                 searchSuggestions.classList.remove('show');
             }
         });
-        let questions = [];
+        // let qestions = [];
 
 async function loadQuestions() {
     try {
         const res = await fetch("/api/questions");
-        questions = await res.json();
-        displayQuestions(questions);
+        const apiQuestions = await res.json();
+        displayQuestions(apiQuestions);
     } catch (error) {
-        questionsContainer.innerHTML = `<p>Failed to load questions.</p>`;
-        console.error("Error loading questions:", error);
+        console.error("Error loading questions, using sample data:", error);
+        displayQuestions(questions);  // Fallback to sample data
     }
 }
 loadQuestions();

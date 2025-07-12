@@ -16,11 +16,15 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key')
-username = quote_plus("sai")
-password = quote_plus("saivinil@123")
+
+username = quote_plus(os.getenv("DB_USER"))
+password = quote_plus(os.getenv("DB_PASS"))
+
+# Replace YOUR_CLUSTER.mongodb.net with your actual MongoDB Atlas cluster domain
 uri = f"mongodb+srv://{username}:{password}@cluster0.uinxu1w.mongodb.net/?retryWrites=true&w=majority"
+
 client = MongoClient(uri)
-db = client["forum"]
+db = client["forum"]  # Or your actual DB name
 questions_collection = db["questions"]
 class Generator:
     def __init__(self, api_key=None, model="llama3-70b-8192"):
